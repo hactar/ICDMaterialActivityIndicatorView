@@ -71,7 +71,7 @@
     }
     self = [super initWithFrame:frame];
     if (self){
-        
+
         [self commonInit];
         [self setupForStyle:style];
         self.indicatorLayer.radius = radius;
@@ -80,8 +80,8 @@
     return self;
 }
 
-- (void) setupForStyle: (ICDMaterialActivityIndicatorViewStyle) style {
-    
+- (void)setupForStyle: (ICDMaterialActivityIndicatorViewStyle) style {
+
     switch (style) {
         case ICDMaterialActivityIndicatorViewStyleSmall:
             self.lineWidth = 1.0;
@@ -102,7 +102,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void) commonInit {
+- (void)commonInit {
     _hidesWhenStopped = YES;
     _animating = NO;
     self.hidden = YES;
@@ -125,7 +125,7 @@
 }
 
 - (void)onAppDidEnterBackground {
-    [self stopAnimating];
+    self.animating = NO;
 }
 
 - (void)layoutSubviews{
@@ -179,12 +179,12 @@
     CAKeyframeAnimation *inAnimation = [CAKeyframeAnimation animationWithKeyPath:@"strokeEnd"];
     inAnimation.duration = self.duration;
     inAnimation.values = @[@(0), @(1)];
-    
+
     CAKeyframeAnimation *outAnimation = [CAKeyframeAnimation animationWithKeyPath:@"strokeStart"];
     outAnimation.duration = self.duration;
     outAnimation.values = @[@(0), @(0.8), @(1)];
     outAnimation.beginTime = self.duration / 1.5;
-    
+
     CAAnimationGroup *strokeAnimation = [CAAnimationGroup animation];
     strokeAnimation.animations = @[inAnimation, outAnimation];
     strokeAnimation.duration = self.duration + outAnimation.beginTime;
@@ -210,7 +210,7 @@
         CAAnimationGroup *strokeAnimation = [self createNewStrokeAnimation];
         strokeAnimation.speed = 0;
         [self.indicatorLayer addAnimation:strokeAnimation forKey:@"rotation"];
-        
+
         CABasicAnimation *rotateAnimation = [self createNewRotateAnimation];
         rotateAnimation.speed = 0;
         [self.indicatorLayer addAnimation:rotateAnimation forKey:@"stroke"];
@@ -236,18 +236,13 @@
 - (void)startAnimating{
     self.shouldBeAnimating = YES;
     self.hidden = NO;
-    if (!self.isAnimating) {
-        [self resetAnimations];
-    }
+    [self resetAnimations];
     self.indicatorLayer.speed = 1;
     self.animating = YES;
 }
 
 - (void)stopAnimating{
     self.shouldBeAnimating = NO;
-    if (!self.isAnimating){
-        return;
-    }
     [UIView animateWithDuration:0.5 animations:^{
         self.alpha = 0.0;
     } completion:^(BOOL finished) {
