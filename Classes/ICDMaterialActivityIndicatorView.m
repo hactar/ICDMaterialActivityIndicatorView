@@ -37,7 +37,9 @@
 @property(strong, nonatomic) ICDMaterialActivityIndicatorLayer *indicatorLayer;
 @end
 
-@implementation ICDMaterialActivityIndicatorView
+@implementation ICDMaterialActivityIndicatorView {
+    BOOL setupComplete;
+}
 
 - (instancetype)init{
     return [self initWithActivityIndicatorStyle:ICDMaterialActivityIndicatorViewStyleSmall];
@@ -73,6 +75,7 @@
         [self commonInit];
         [self setupForStyle:style];
         self.indicatorLayer.radius = radius;
+        setupComplete = YES;
     }
     return self;
 }
@@ -112,16 +115,7 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     [self commonInit];
-    ICDMaterialActivityIndicatorViewStyle style = ICDMaterialActivityIndicatorViewStyleLarge;
-    float radius = self.frame.size.width / 2.;
-    if (radius <= 10.) {
-        style = ICDMaterialActivityIndicatorViewStyleSmall;
-    }
-    if (radius <= 20.) {
-        style = ICDMaterialActivityIndicatorViewStyleMedium;
-    }
-    [self setupForStyle:style];
-    self.indicatorLayer.radius = self.frame.size.width / 2.;
+    
 }
 
 - (void)onAppWillEnterForeground {
@@ -137,6 +131,18 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
     self.indicatorLayer.frame = CGRectMake((self.bounds.size.width - 2.0 * self.indicatorLayer.radius) / 2.0 , (self.bounds.size.height - 2.0 * self.indicatorLayer.radius) / 2.0, 2.0 * self.indicatorLayer.radius, 2.0 * self.indicatorLayer.radius);
+    if (!setupComplete) {
+        ICDMaterialActivityIndicatorViewStyle style = ICDMaterialActivityIndicatorViewStyleLarge;
+        float radius = self.frame.size.width / 2.;
+        if (radius <= 10.) {
+            style = ICDMaterialActivityIndicatorViewStyleSmall;
+        }
+        if (radius <= 20.) {
+            style = ICDMaterialActivityIndicatorViewStyleMedium;
+        }
+        [self setupForStyle:style];
+        self.indicatorLayer.radius = self.frame.size.width / 2.;
+    }
 }
 
 - (ICDMaterialActivityIndicatorLayer *)indicatorLayer{
